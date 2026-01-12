@@ -8,7 +8,7 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 |-----------|------|--------|-------------|
 | M-0001 | T-001 | Done | Initialize repo structure and templates |
 | M-0001 | T-002 | Done | Implement synthetic data generator |
-| M-0001 | T-003 | Pending | Implement recon tool |
+| M-0001 | T-003 | Done | Implement recon tool |
 | M-0001 | T-004 | Pending | Implement verification script |
 | M-0001 | T-005 | Pending | Final review and doc update |
 
@@ -26,6 +26,7 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 │   └── well_barcodes.csv     # Format specification examples
 ├── scripts/
 │   ├── generate_synthetic.py # Synthetic FASTQ generator
+│   ├── recon_fastq.py        # FASTQ reconnaissance tool
 │   └── verify.sh             # Verification script
 └── logs/                     # Verification logs
 ```
@@ -95,6 +96,23 @@ Output files:
 - `build/synthetic_R2.fq.gz` — R2 reads with well i7 barcode prefix
 - `build/synthetic_manifest.csv` — Manifest of generated combinations
 
+### Run FASTQ Reconnaissance
+```bash
+python3 scripts/recon_fastq.py --r1 <R1.fq.gz> --r2 <R2.fq.gz>
+```
+
+Options:
+- `--sample-size N` — Number of reads to sample (default: 1000)
+- `--window-size N` — Sequence window size to analyze (default: 20)
+- `--top-n N` — Show top N frequent sequences (default: 10)
+- `--output FILE` — Output text report file
+- `--json FILE` — Output JSON report file
+
+The recon tool analyzes FASTQ files to:
+- Detect Illumina header format and index presence
+- Identify barcode candidate positions by sequence frequency
+- Help determine demultiplex parameters
+
 ### Run Verification
 ```bash
 ./scripts/verify.sh
@@ -103,6 +121,7 @@ Output files:
 This will check:
 - Directory structure exists (AC-001)
 - Barcode files are properly formatted (AC-001)
+- Recon tool analyzes FASTQ and identifies barcodes (AC-002)
 - Synthetic data generator works correctly (AC-003)
 - Generated FASTQ has valid Illumina header format (AC-003)
 

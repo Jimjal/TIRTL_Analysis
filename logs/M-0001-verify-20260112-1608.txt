@@ -1,0 +1,85 @@
+==========================================
+M-0001 Verification - 20260112-1608
+==========================================
+
+--- AC-001: Repo Structure & Templates ---
+
+[PASS] examples/ directory exists
+[PASS] examples/well_barcodes.csv exists
+[PASS] examples/plate_barcodes.csv exists
+[PASS] scripts/ directory exists
+[PASS] docs/demux_plan.md exists
+[PASS] well_barcodes.csv has valid format (header + data)
+[PASS] plate_barcodes.csv has valid format (header + data)
+[PASS] demux_plan.md contains Overview section
+[PASS] demux_plan.md contains Data Structure section
+[PASS] demux_plan.md contains Demultiplex Strategy section
+
+--- AC-003: Synthetic Data Generator ---
+
+[PASS] scripts/generate_synthetic.py exists
+[PASS] scripts/generate_synthetic.py is executable or runnable
+[INFO] Running synthetic data generator...
+Loading well barcodes from: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_well.csv
+Loading plate barcodes from: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_plate.csv
+Loaded 96 well barcodes
+Loaded 12 plate barcodes
+
+Generating synthetic FASTQ files...
+  Output directory: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build
+  Wells: 3
+  Plates: 2
+  Reads per combination: 10
+  Read length: 100
+  Random seed: 42
+
+Generation complete!
+  R1: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R1.fq.gz
+  R2: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R2.fq.gz
+  Manifest: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_manifest.csv
+  Total reads: 60
+[INFO] Generator completed successfully
+[PASS] build/synthetic_R1.fq.gz exists
+[PASS] build/synthetic_R2.fq.gz exists
+[PASS] build/synthetic_manifest.csv exists
+[PASS] R1 has valid Illumina header format
+[PASS] R2 has valid Illumina header format
+[PASS] R1 contains expected plate barcode prefix (TCGTCGGCAGCGTCAGATGT)
+[PASS] R2 contains expected well barcode (i7)
+[PASS] Manifest has correct header columns
+
+--- AC-002: Recon Tool Implementation ---
+
+[PASS] scripts/recon_fastq.py exists
+[PASS] scripts/recon_fastq.py is valid Python
+[INFO] Running recon tool on synthetic data...
+Analyzing R1: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R1.fq.gz
+Analyzing R2: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R2.fq.gz
+Report saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/recon_report.txt
+JSON report saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/recon_report.json
+
+--- Summary ---
+R1 barcode candidates: ['start']
+R2 barcode candidates: ['start']
+[INFO] Recon tool completed successfully
+[PASS] Recon text report generated
+[PASS] Recon JSON report generated
+[PASS] Recon report contains Header Structure analysis
+[PASS] Recon report shows Illumina format detection
+[PASS] Recon report contains index detection
+[PASS] Recon report contains Sequence Window Analysis
+[PASS] Recon report identifies barcode candidates
+[PASS] Recon detected plate barcode prefix in R1
+[PASS] Recon detected well barcodes in R2
+[PASS] JSON report contains r1 analysis
+[PASS] JSON report contains r2 analysis
+[PASS] JSON report contains summary
+
+==========================================
+Summary: 34 passed, 0 failed (Total: 34)
+==========================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1608.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1608.summary.json
+
+SUCCESS: All checks passed (AC-001, AC-002, AC-003).
