@@ -7,7 +7,7 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 | Milestone | Task | Status | Description |
 |-----------|------|--------|-------------|
 | M-0001 | T-001 | Done | Initialize repo structure and templates |
-| M-0001 | T-002 | Pending | Implement synthetic data generator |
+| M-0001 | T-002 | Done | Implement synthetic data generator |
 | M-0001 | T-003 | Pending | Implement recon tool |
 | M-0001 | T-004 | Pending | Implement verification script |
 | M-0001 | T-005 | Pending | Final review and doc update |
@@ -18,12 +18,14 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 .
 ├── TIRTL_barcode_plate.csv   # Plate barcodes (12 entries)
 ├── TIRTL_barcode_well.csv    # Well barcodes (96 entries)
+├── build/                    # Generated synthetic data (gitignored)
 ├── docs/
 │   └── demux_plan.md         # Demultiplex strategy document
 ├── examples/
 │   ├── plate_barcodes.csv    # Format specification examples
 │   └── well_barcodes.csv     # Format specification examples
 ├── scripts/
+│   ├── generate_synthetic.py # Synthetic FASTQ generator
 │   └── verify.sh             # Verification script
 └── logs/                     # Verification logs
 ```
@@ -76,22 +78,40 @@ MP_V4_Ca_P5_UD01,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGAGAACCTCGCCACAGCAGGTTCTGGGTTCT
 
 ## Quick Start
 
+### Generate Synthetic Test Data
+```bash
+python3 scripts/generate_synthetic.py
+```
+
+Options:
+- `--output-dir DIR` — Output directory (default: `build/`)
+- `--num-reads N` — Reads per well/plate combination (default: 10)
+- `--wells N` — Number of wells to include (default: 3)
+- `--plates N` — Number of plates to include (default: 2)
+- `--seed N` — Random seed for reproducibility (default: 42)
+
+Output files:
+- `build/synthetic_R1.fq.gz` — R1 reads with plate barcode prefix
+- `build/synthetic_R2.fq.gz` — R2 reads with well i7 barcode prefix
+- `build/synthetic_manifest.csv` — Manifest of generated combinations
+
 ### Run Verification
 ```bash
 ./scripts/verify.sh
 ```
 
 This will check:
-- Directory structure exists
-- Barcode files are properly formatted
-- Documentation templates are in place
+- Directory structure exists (AC-001)
+- Barcode files are properly formatted (AC-001)
+- Synthetic data generator works correctly (AC-003)
+- Generated FASTQ has valid Illumina header format (AC-003)
 
 Logs are saved to `logs/M-0001-verify-YYYYMMDD-HHMM.txt`
 
 ## Requirements
 
 - Bash shell (macOS/Linux)
-- No external dependencies for T-001
+- Python 3.6+ (standard library only, no external dependencies)
 
 ## License
 
