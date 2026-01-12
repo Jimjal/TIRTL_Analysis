@@ -1,0 +1,25 @@
+==========================================
+M-0001 Verification - 20260112-1547
+==========================================
+
+--- AC-001: Repo Structure & Templates ---
+
+[PASS] examples/ directory exists
+[PASS] examples/well_barcodes.csv exists
+[PASS] examples/plate_barcodes.csv exists
+[PASS] scripts/ directory exists
+[PASS] docs/demux_plan.md exists
+[PASS] well_barcodes.csv has valid format (header + data)
+[PASS] plate_barcodes.csv has valid format (header + data)
+[PASS] demux_plan.md contains Overview section
+[PASS] demux_plan.md contains Data Structure section
+[PASS] demux_plan.md contains Demultiplex Strategy section
+
+==========================================
+Summary: 10 passed, 0 failed (Total: 10)
+==========================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1547.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1547.summary.json
+
+SUCCESS: All AC-001 checks passed.
