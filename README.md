@@ -10,7 +10,9 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 | M-0001 | T-002 | Done | Implement synthetic data generator |
 | M-0001 | T-003 | Done | Implement recon tool |
 | M-0001 | T-004 | Done | Implement verification script |
-| M-0001 | T-005 | Pending | Final review and doc update |
+| M-0001 | T-005 | Done | Final review and doc update |
+
+**M-0001 Status: COMPLETE** - All acceptance criteria verified.
 
 ## Directory Structure
 

@@ -1,0 +1,59 @@
+==================================================
+M-0001 Verification - 20260112-1622
+==================================================
+
+
+--- AC-001: Repo Structure & Templates ---
+
+[PASS] examples/ directory exists
+[PASS] scripts/ directory exists
+[PASS] docs/ directory exists
+[PASS] examples/well_barcodes.csv exists
+[PASS] examples/plate_barcodes.csv exists
+[PASS] docs/demux_plan.md exists
+[PASS] TIRTL_barcode_well.csv exists
+[PASS] TIRTL_barcode_plate.csv exists
+[PASS] demux_plan.md contains Overview section
+[PASS] demux_plan.md contains Data Structure section
+
+--- AC-003: Synthetic Data Generator ---
+
+[PASS] scripts/generate_synthetic.py exists
+[INFO] Running synthetic data generator...
+[PASS] Synthetic data generator runs successfully
+[PASS] synthetic_R1.fq.gz generated
+[PASS] synthetic_R2.fq.gz generated
+[PASS] synthetic_manifest.csv generated
+[PASS] R1 has Illumina-format header
+[PASS] R1 contains plate barcode prefix
+[PASS] R2 contains well barcode (i7)
+
+--- AC-002: Recon Tool Implementation ---
+
+[PASS] scripts/recon_fastq.py exists
+[INFO] Running recon tool on synthetic data...
+[PASS] Recon tool runs successfully
+[PASS] Recon text report generated
+[PASS] Recon JSON report generated
+[PASS] Report contains Header Structure analysis
+[PASS] Report shows Illumina format detection
+[PASS] Report contains index detection
+[PASS] Report contains Sequence Window Analysis
+[PASS] Report identifies barcode candidates
+
+--- AC-004: Closed-Loop Verification ---
+
+[PASS] Recon JSON available for validation
+[PASS] Recon correctly identified plate barcode in R1
+[PASS] Recon correctly identified well barcodes in R2
+[PASS] R1 start position identified as barcode candidate
+[PASS] R2 start position identified as barcode candidate
+
+==================================================
+Summary: 32 passed, 0 failed (Total: 32)
+==================================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1622.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0001-verify-20260112-1622.summary.json
+
+SUCCESS: All checks passed.
