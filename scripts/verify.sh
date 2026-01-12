@@ -74,6 +74,55 @@ check "demux_plan.md contains Demultiplex Strategy section" \
     "grep -q '## 4. Demultiplex Strategy' '$PROJECT_ROOT/docs/demux_plan.md'"
 
 log ""
+
+# AC-003: Synthetic Data Generator
+log "--- AC-003: Synthetic Data Generator ---"
+log ""
+
+check "scripts/generate_synthetic.py exists" \
+    "[ -f '$PROJECT_ROOT/scripts/generate_synthetic.py' ]"
+
+check "scripts/generate_synthetic.py is executable or runnable" \
+    "python3 -c \"import ast; ast.parse(open('$PROJECT_ROOT/scripts/generate_synthetic.py').read())\""
+
+# Run the generator to create test data
+log "[INFO] Running synthetic data generator..."
+if python3 "$PROJECT_ROOT/scripts/generate_synthetic.py" --output-dir "$PROJECT_ROOT/build" >> "$LOG_FILE" 2>&1; then
+    log "[INFO] Generator completed successfully"
+else
+    log "[FAIL] Generator failed to run"
+    FAIL=$((FAIL + 1))
+    TOTAL=$((TOTAL + 1))
+fi
+
+check "build/synthetic_R1.fq.gz exists" \
+    "[ -f '$PROJECT_ROOT/build/synthetic_R1.fq.gz' ]"
+
+check "build/synthetic_R2.fq.gz exists" \
+    "[ -f '$PROJECT_ROOT/build/synthetic_R2.fq.gz' ]"
+
+check "build/synthetic_manifest.csv exists" \
+    "[ -f '$PROJECT_ROOT/build/synthetic_manifest.csv' ]"
+
+# Verify Illumina header format: @<instrument>:<run>:<flowcell>:<lane>:<tile>:<x>:<y> <read>:<filtered>:<control>:<index>
+check "R1 has valid Illumina header format" \
+    "gunzip -c '$PROJECT_ROOT/build/synthetic_R1.fq.gz' | head -1 | grep -qE '^@[A-Z0-9]+:[0-9]+:[0-9A-Z-]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+ [12]:[YN]:[0-9]+:[ACGTN+]+$'"
+
+check "R2 has valid Illumina header format" \
+    "gunzip -c '$PROJECT_ROOT/build/synthetic_R2.fq.gz' | head -1 | grep -qE '^@[A-Z0-9]+:[0-9]+:[0-9A-Z-]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+ [12]:[YN]:[0-9]+:[ACGTN+]+$'"
+
+# Verify barcodes are embedded in reads
+check "R1 contains expected plate barcode prefix (TCGTCGGCAGCGTCAGATGT)" \
+    "gunzip -c '$PROJECT_ROOT/build/synthetic_R1.fq.gz' | grep -q 'TCGTCGGCAGCGTCAGATGT'"
+
+check "R2 contains expected well barcode (i7)" \
+    "gunzip -c '$PROJECT_ROOT/build/synthetic_R2.fq.gz' | grep -qE '^(ATAGGCGCTC|TACAACCTCA|AGTTATCGGA)'"
+
+# Verify manifest has correct columns
+check "Manifest has correct header columns" \
+    "head -1 '$PROJECT_ROOT/build/synthetic_manifest.csv' | grep -q 'well,plate,i5_name,i7_name'"
+
+log ""
 log "=========================================="
 log "Summary: $PASS passed, $FAIL failed (Total: $TOTAL)"
 log "=========================================="
@@ -83,7 +132,8 @@ cat > "$SUMMARY_FILE" << EOF
 {
   "timestamp": "$TIMESTAMP",
   "milestone": "M-0001",
-  "task": "T-001",
+  "tasks_verified": ["T-001", "T-002"],
+  "acceptance_criteria": ["AC-001", "AC-003"],
   "total_checks": $TOTAL,
   "passed": $PASS,
   "failed": $FAIL,
@@ -98,7 +148,7 @@ log "Summary saved to: $SUMMARY_FILE"
 
 if [ $FAIL -eq 0 ]; then
     log ""
-    log "SUCCESS: All AC-001 checks passed."
+    log "SUCCESS: All checks passed (AC-001, AC-003)."
     exit 0
 else
     log ""
