@@ -9,7 +9,7 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 | M-0001 | T-001 | Done | Initialize repo structure and templates |
 | M-0001 | T-002 | Done | Implement synthetic data generator |
 | M-0001 | T-003 | Done | Implement recon tool |
-| M-0001 | T-004 | Pending | Implement verification script |
+| M-0001 | T-004 | Done | Implement verification script |
 | M-0001 | T-005 | Pending | Final review and doc update |
 
 ## Directory Structure
@@ -27,7 +27,8 @@ This repository contains tools and configurations for demultiplexing TIRTL-seq (
 ├── scripts/
 │   ├── generate_synthetic.py # Synthetic FASTQ generator
 │   ├── recon_fastq.py        # FASTQ reconnaissance tool
-│   └── verify.sh             # Verification script
+│   ├── verify.py             # Python verification script (AC-004)
+│   └── verify.sh             # Bash verification script
 └── logs/                     # Verification logs
 ```
 
@@ -114,16 +115,29 @@ The recon tool analyzes FASTQ files to:
 - Help determine demultiplex parameters
 
 ### Run Verification
+
+**Python version (recommended):**
+```bash
+python3 scripts/verify.py
+```
+
+**Bash version:**
 ```bash
 ./scripts/verify.sh
 ```
 
-This will check:
+The verification implements a closed-loop workflow:
+1. Generate synthetic data with known barcodes
+2. Run recon tool to analyze the data
+3. Assert recon correctly identified barcode positions
+4. Output verification logs and JSON summary
+
+Checks performed:
 - Directory structure exists (AC-001)
 - Barcode files are properly formatted (AC-001)
 - Recon tool analyzes FASTQ and identifies barcodes (AC-002)
 - Synthetic data generator works correctly (AC-003)
-- Generated FASTQ has valid Illumina header format (AC-003)
+- Closed-loop verification passes (AC-004)
 
 Logs are saved to `logs/M-0001-verify-YYYYMMDD-HHMM.txt`
 
