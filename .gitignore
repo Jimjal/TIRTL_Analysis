@@ -1,0 +1,40 @@
+# TIRTL Analysis Project .gitignore
+
+# Data files - DO NOT commit real FASTQ data
+*.fq.gz
+*.fastq.gz
+*.fq
+*.fastq
+*.tar.gz
+
+# Raw data directories
+ZijianHuang_*/
+
+# Build artifacts
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Keep logs but ignore large outputs
+# (logs/*.txt and logs/*.json are tracked)

@@ -1,0 +1,16 @@
+# Well Barcodes for TIRTL-seq
+# Format: Row,Column,i5_name,i5_sequence,i7_name,i7_sequence
+# - Row: A-H (96-well plate row)
+# - Column: 1-12 (96-well plate column)
+# - i5_name: 10bp index name (used as identifier)
+# - i5_sequence: Full i5 adapter+index sequence
+# - i7_name: 10bp index name (used as identifier)
+# - i7_sequence: Full i7 adapter+index sequence
+#
+# The i5_name and i7_name represent the unique 10bp barcode that identifies each well.
+# These are embedded within the full adapter sequences.
+#
+Row,Column,i5_name,i5_sequence,i7_name,i7_sequence
+A,1,TTGGTACGCG,AATGATACGGCGACCACCGAGATCTACACTTGGTACGCGTCGTCGGCAGCGTC,ATAGGCGCTC,CAAGCAGAAGACGGCATACGAGATATAGGCGCTCGTCTCGTGGGCTCGG
+B,1,AACTGACCAA,AATGATACGGCGACCACCGAGATCTACACAACTGACCAATCGTCGGCAGCGTC,TACAACCTCA,CAAGCAGAAGACGGCATACGAGATTACAACCTCAGTCTCGTGGGCTCGG
+C,1,ATGTCTCCGG,AATGATACGGCGACCACCGAGATCTACACATGTCTCCGGTCGTCGGCAGCGTC,AGTTATCGGA,CAAGCAGAAGACGGCATACGAGATAGTTATCGGAGTCTCGTGGGCTCGG

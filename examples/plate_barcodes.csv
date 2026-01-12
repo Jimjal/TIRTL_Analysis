@@ -1,0 +1,16 @@
+# Plate Barcodes for TIRTL-seq
+# Format: name,sequence
+# - name: Plate barcode identifier (e.g., MP_V4_Ca_P5_UD01)
+#   - MP_V4: Mouse Protocol Version 4
+#   - Ca/Cb: Chain type (alpha/beta for TCR)
+#   - P5: P5 adapter side
+#   - UD01-06: Unique Dual index number
+# - sequence: Full adapter sequence containing the plate-specific barcode
+#
+# The plate barcode is embedded within the sequence and identifies which plate
+# the sample came from in a multiplexed TIRTL-seq run.
+#
+name,sequence
+MP_V4_Ca_P5_UD01,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGAGAACCTCGCCACAGCAGGTTCTGGGTTCTG
+MP_V4_Ca_P5_UD02,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGCCTACGGACACACAGCAGGTTCTGGGTTCTG
+MP_V4_Cb_P5_UD01,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGTCGAACACGATTGGGTGGAGTCACATTTCTCAGATC
