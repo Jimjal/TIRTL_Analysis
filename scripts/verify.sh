@@ -123,6 +123,78 @@ check "Manifest has correct header columns" \
     "head -1 '$PROJECT_ROOT/build/synthetic_manifest.csv' | grep -q 'well,plate,i5_name,i7_name'"
 
 log ""
+
+# AC-002: Recon Tool Implementation
+log "--- AC-002: Recon Tool Implementation ---"
+log ""
+
+check "scripts/recon_fastq.py exists" \
+    "[ -f '$PROJECT_ROOT/scripts/recon_fastq.py' ]"
+
+check "scripts/recon_fastq.py is valid Python" \
+    "python3 -c \"import ast; ast.parse(open('$PROJECT_ROOT/scripts/recon_fastq.py').read())\""
+
+# Run recon tool on synthetic data
+RECON_OUTPUT="$PROJECT_ROOT/build/recon_report.txt"
+RECON_JSON="$PROJECT_ROOT/build/recon_report.json"
+
+log "[INFO] Running recon tool on synthetic data..."
+if python3 "$PROJECT_ROOT/scripts/recon_fastq.py" \
+    --r1 "$PROJECT_ROOT/build/synthetic_R1.fq.gz" \
+    --r2 "$PROJECT_ROOT/build/synthetic_R2.fq.gz" \
+    --sample-size 60 \
+    --window-size 10 \
+    --output "$RECON_OUTPUT" \
+    --json "$RECON_JSON" >> "$LOG_FILE" 2>&1; then
+    log "[INFO] Recon tool completed successfully"
+else
+    log "[FAIL] Recon tool failed to run"
+    FAIL=$((FAIL + 1))
+    TOTAL=$((TOTAL + 1))
+fi
+
+check "Recon text report generated" \
+    "[ -f '$RECON_OUTPUT' ]"
+
+check "Recon JSON report generated" \
+    "[ -f '$RECON_JSON' ]"
+
+# Verify recon output contains header analysis
+check "Recon report contains Header Structure analysis" \
+    "grep -q 'Header Structure' '$RECON_OUTPUT'"
+
+check "Recon report shows Illumina format detection" \
+    "grep -q 'Illumina format' '$RECON_OUTPUT'"
+
+check "Recon report contains index detection" \
+    "grep -q 'Has index in header' '$RECON_OUTPUT'"
+
+# Verify recon output contains sequence window analysis
+check "Recon report contains Sequence Window Analysis" \
+    "grep -q 'Sequence Window Analysis' '$RECON_OUTPUT'"
+
+check "Recon report identifies barcode candidates" \
+    "grep -q 'BARCODE CANDIDATE' '$RECON_OUTPUT'"
+
+# Verify recon correctly identified synthetic barcodes
+# Note: with 10bp window, plate barcode shows as TCGTCGGCAG (first 10bp of 20bp prefix)
+check "Recon detected plate barcode prefix in R1" \
+    "grep -q 'TCGTCGGCAG' '$RECON_OUTPUT'"
+
+check "Recon detected well barcodes in R2" \
+    "grep -qE '(ATAGGCGCTC|TACAACCTCA|AGTTATCGGA)' '$RECON_OUTPUT'"
+
+# Verify JSON output structure
+check "JSON report contains r1 analysis" \
+    "python3 -c \"import json; d=json.load(open('$RECON_JSON')); assert 'r1' in d\""
+
+check "JSON report contains r2 analysis" \
+    "python3 -c \"import json; d=json.load(open('$RECON_JSON')); assert 'r2' in d\""
+
+check "JSON report contains summary" \
+    "python3 -c \"import json; d=json.load(open('$RECON_JSON')); assert 'summary' in d\""
+
+log ""
 log "=========================================="
 log "Summary: $PASS passed, $FAIL failed (Total: $TOTAL)"
 log "=========================================="
@@ -132,8 +204,8 @@ cat > "$SUMMARY_FILE" << EOF
 {
   "timestamp": "$TIMESTAMP",
   "milestone": "M-0001",
-  "tasks_verified": ["T-001", "T-002"],
-  "acceptance_criteria": ["AC-001", "AC-003"],
+  "tasks_verified": ["T-001", "T-002", "T-003"],
+  "acceptance_criteria": ["AC-001", "AC-002", "AC-003"],
   "total_checks": $TOTAL,
   "passed": $PASS,
   "failed": $FAIL,
@@ -148,7 +220,7 @@ log "Summary saved to: $SUMMARY_FILE"
 
 if [ $FAIL -eq 0 ]; then
     log ""
-    log "SUCCESS: All checks passed (AC-001, AC-003)."
+    log "SUCCESS: All checks passed (AC-001, AC-002, AC-003)."
     exit 0
 else
     log ""
