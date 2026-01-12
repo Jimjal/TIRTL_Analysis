@@ -1,4 +1,10 @@
 # Plate Barcodes for TIRTL-seq
+#
+# NOTE: The actual plate barcode file is located at:
+#       ../TIRTL_barcode_plate.csv
+#
+# This file documents the format specification.
+#
 # Format: name,sequence
 # - name: Plate barcode identifier (e.g., MP_V4_Ca_P5_UD01)
 #   - MP_V4: Mouse Protocol Version 4
@@ -10,6 +16,7 @@
 # The plate barcode is embedded within the sequence and identifies which plate
 # the sample came from in a multiplexed TIRTL-seq run.
 #
+# Example rows (see ../TIRTL_barcode_plate.csv for complete data):
 name,sequence
 MP_V4_Ca_P5_UD01,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGAGAACCTCGCCACAGCAGGTTCTGGGTTCTG
 MP_V4_Ca_P5_UD02,TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGCCTACGGACACACAGCAGGTTCTGGGTTCTG

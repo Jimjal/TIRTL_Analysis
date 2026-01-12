@@ -1,4 +1,10 @@
 # Well Barcodes for TIRTL-seq
+#
+# NOTE: The actual well barcode file is located at:
+#       ../TIRTL_barcode_well.csv
+#
+# This file documents the format specification.
+#
 # Format: Row,Column,i5_name,i5_sequence,i7_name,i7_sequence
 # - Row: A-H (96-well plate row)
 # - Column: 1-12 (96-well plate column)
@@ -10,6 +16,7 @@
 # The i5_name and i7_name represent the unique 10bp barcode that identifies each well.
 # These are embedded within the full adapter sequences.
 #
+# Example rows (see ../TIRTL_barcode_well.csv for complete data):
 Row,Column,i5_name,i5_sequence,i7_name,i7_sequence
 A,1,TTGGTACGCG,AATGATACGGCGACCACCGAGATCTACACTTGGTACGCGTCGTCGGCAGCGTC,ATAGGCGCTC,CAAGCAGAAGACGGCATACGAGATATAGGCGCTCGTCTCGTGGGCTCGG
 B,1,AACTGACCAA,AATGATACGGCGACCACCGAGATCTACACAACTGACCAATCGTCGGCAGCGTC,TACAACCTCA,CAAGCAGAAGACGGCATACGAGATTACAACCTCAGTCTCGTGGGCTCGG
