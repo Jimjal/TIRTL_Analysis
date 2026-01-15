@@ -1,0 +1,27 @@
+# TIRTL-seq Analysis Pipeline Requirements
+# Environment: TIRTL_analyse (conda)
+#
+# Standard Installation (x86_64 / Intel Mac / Windows):
+#   conda activate TIRTL_analyse
+#   pip install -r requirements.txt
+#
+# ARM64 (Apple Silicon M1/M2/M3) Installation:
+#   The tssv dependency uses x86 SSE intrinsics that don't compile on ARM64.
+#   Use the patched version in scripts/patches/tssv-1.1.2-arm64/:
+#
+#   conda activate TIRTL_analyse
+#   pip install --no-deps demultiplex biopython dict-trie fastools jit-open
+#   pip install scripts/patches/tssv-1.1.2-arm64/
+#
+# Note: This project requires the demultiplex tool from jfjlaros
+# Documentation: https://demultiplex.readthedocs.io
+
+# Core demultiplexing tool
+demultiplex>=1.2.0
+
+# Dependencies (automatically installed by demultiplex, listed for reference)
+# biopython>=1.72
+# dict-trie>=1.0.1
+# fastools>=1.1.0
+# jit-open>=1.0.1
+# tssv>=1.1.0 (patched version required for ARM64)

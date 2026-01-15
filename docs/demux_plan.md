@@ -4,7 +4,7 @@
 
 This document describes the demultiplexing strategy for TIRTL-seq data.
 
-**Status**: Recon Complete - Ready for Demux Parameter Lock-down
+**Status**: Well Demux Implemented (M-0002 Complete)
 
 ---
 
@@ -95,33 +95,85 @@ Based on recon analysis:
 
 ## 5. Execution Plan
 
-### 5.1 Pre-processing
-1. Run recon tool on sample of real data
-2. Verify barcode positions match synthetic data patterns
-3. Adjust window sizes if needed
+### 5.1 Environment Setup
 
-### 5.2 Demux Command
+**IMPORTANT**: All commands must be run in the `TIRTL_analyse` conda environment.
+
 ```bash
-# Example command (adjust paths as needed)
-demultiplex demux \
-    --input-r1 <R1.fq.gz> \
-    --input-r2 <R2.fq.gz> \
-    --barcodes TIRTL_barcode_well.csv \
-    --mismatch 1 \
-    --output-dir demux_output/
+# Activate environment
+conda activate TIRTL_analyse
+
+# Verify demultiplex is installed
+demultiplex --help
 ```
 
-### 5.3 Post-processing
-1. Count reads per well/plate combination
-2. Calculate demux efficiency
-3. Flag wells with low read counts
+**ARM64 (Apple Silicon) Note**: If installing on M1/M2/M3 Mac, use the patched tssv:
+```bash
+pip install scripts/patches/tssv-1.1.2-arm64/
+```
+
+### 5.2 Well Demux Command (M-0002)
+
+Use the `run_demux.py` wrapper script for well-code demultiplexing:
+
+```bash
+conda activate TIRTL_analyse
+
+python scripts/run_demux.py \
+    --r1 <R1.fq.gz> \
+    --barcodes TIRTL_barcode_well.csv \
+    --output-dir out/well_demux/
+```
+
+**Options**:
+- `--r1`: R1 FASTQ file (required)
+- `--r2`: R2 FASTQ file (optional, for paired-end)
+- `--barcodes`: Well barcode CSV file (required)
+- `--output-dir`: Output directory (required)
+- `--mismatch`: Allowed mismatches (default: 1)
+
+**Output Files**:
+- `well_<ID>.fastq.gz`: Reads for each well (e.g., `well_A01.fastq.gz`)
+- `unknown.fastq.gz`: Unmatched reads
+- `demux_stats.tsv`: Read counts per well
+
+### 5.3 Verification
+
+Run the verification script to validate the demux workflow:
+
+```bash
+conda activate TIRTL_analyse
+
+# Verify M-0002 implementation
+python scripts/verify.py --milestone M-0002
+
+# View results
+cat logs/M-0002-verify-*.summary.json
+```
+
+### 5.4 Post-processing
+1. Review `demux_stats.tsv` for read distribution
+2. Check unknown reads percentage (should be < 10%)
+3. Verify all expected wells have reads
 
 ---
 
 ## 6. Validation Criteria
 
+### M-0001 (Recon)
 - [x] Recon tool identifies barcode positions correctly
 - [x] Synthetic data validates closed-loop workflow
+
+### M-0002 (Well Demux)
+- [x] `run_demux.py` exists and runs with --help
+- [x] Produces `well_<ID>.fastq.gz` for each well
+- [x] Produces `unknown.fastq.gz` for unmatched reads
+- [x] All output files are valid gzip
+- [x] `demux_stats.tsv` has correct columns (well_id, read_count, percent)
+- [x] Read count sum matches input reads (no data loss)
+- [x] `verify.py --milestone M-0002` passes all checks
+
+### Future (Real Data)
 - [ ] All expected well+plate combinations found in real data
 - [ ] Undetermined reads < 10%
 - [ ] Read quality preserved after demux
@@ -134,3 +186,4 @@ demultiplex demux \
 |------|---------|-------------|
 | 2026-01-12 | v0.1 | Initial template created (T-001) |
 | 2026-01-12 | v0.2 | Updated with recon analysis results (T-005) |
+| 2026-01-14 | v0.3 | Added M-0002 well demux implementation (T-004) |

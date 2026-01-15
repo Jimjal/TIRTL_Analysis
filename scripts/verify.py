@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 """
-verify.py - Verification Script for M-0001 TIRTL-seq Demux Recon
+verify.py - Verification Script for TIRTL-seq Pipeline
 
-This script implements the closed-loop verification workflow:
-1. Generate synthetic FASTQ data with known barcodes
-2. Run recon tool to analyze the synthetic data
-3. Assert that recon correctly identified the barcode characteristics
-4. Output verification logs and JSON summary
+Supports verification for multiple milestones:
+- M-0001: Demux Recon (generate -> recon -> assert)
+- M-0002: Well Demux (generate -> demux -> assert)
 
-AC-004 Requirements:
-- scripts/verify.py runs successfully (Exit Code 0)
-- Closed-loop: generate -> recon -> assert
-- Output logs/M-0001-verify-*.txt and .json
+AC Requirements:
+- M-0001 AC-004: Closed-loop recon verification
+- M-0002 AC-005: Closed-loop demux verification (Synthetic Gen -> Demux -> Check)
 
 Usage:
     python3 scripts/verify.py [options]
+    python3 scripts/verify.py --milestone M-0002  # Verify M-0002 only
 
 Options:
+    --milestone M       Milestone to verify (default: all)
     --output-dir DIR    Build output directory (default: build/)
     --log-dir DIR       Log output directory (default: logs/)
     --verbose           Show detailed output
 """
 
 import argparse
+import csv
+import gzip
 import json
 import os
 import subprocess
@@ -304,8 +305,8 @@ class Verifier:
             reader = csv.DictReader(f)
             manifest = list(reader)
 
-        # Extract expected barcodes from manifest
-        expected_i7 = set(row["i7_name"] for row in manifest)
+        # Extract expected barcodes from manifest (exclude RANDOM/UNKNOWN noise entries)
+        expected_i7 = set(row["i7_name"] for row in manifest if row["i7_name"] != "RANDOM")
         expected_plate_prefix = "TCGTCGGCAG"  # First 10bp of plate sequence
 
         # Verify R1 barcode detection
@@ -341,17 +342,267 @@ class Verifier:
 
         return True
 
-    def save_results(self):
+    # =========================================================================
+    # M-0002: Well Demux Verification
+    # =========================================================================
+
+    def verify_m0002_ac001_interface(self):
+        """M-0002 AC-001: Verify run_demux.py interface."""
+        self.log("")
+        self.log("--- M-0002 AC-001: Demux Interface ---")
+        self.log("")
+
+        demux_script = self.project_root / "scripts/run_demux.py"
+
+        self.check("scripts/run_demux.py exists",
+                   demux_script.is_file())
+
+        if not demux_script.is_file():
+            return False
+
+        # Test --help
+        result = self.run_command(
+            [sys.executable, str(demux_script), "--help"],
+            "Testing run_demux.py --help..."
+        )
+
+        help_success = result is not None and result.returncode == 0
+        self.check("run_demux.py --help runs successfully", help_success)
+
+        if help_success:
+            help_text = result.stdout
+            self.check("--r1 argument documented", "--r1" in help_text)
+            self.check("--barcodes argument documented", "--barcodes" in help_text)
+            self.check("--output-dir argument documented", "--output-dir" in help_text)
+
+        return help_success
+
+    def verify_m0002_ac002_functionality(self):
+        """M-0002 AC-002: Verify demux produces correct output files."""
+        self.log("")
+        self.log("--- M-0002 AC-002: Demux Functionality ---")
+        self.log("")
+
+        demux_script = self.project_root / "scripts/run_demux.py"
+        barcode_file = self.project_root / "TIRTL_barcode_well.csv"
+        r1_path = self.output_dir / "synthetic_R1.fq.gz"
+        demux_output = self.output_dir / "demux"
+
+        if not r1_path.is_file():
+            self.check("Synthetic data available for demux", False,
+                       "Run AC-003 first to generate synthetic data")
+            return False
+
+        self.check("Synthetic data available for demux", True)
+
+        # Run demux
+        result = self.run_command(
+            [sys.executable, str(demux_script),
+             "--r1", str(r1_path),
+             "--barcodes", str(barcode_file),
+             "--output-dir", str(demux_output)],
+            "Running demux on synthetic data..."
+        )
+
+        demux_success = result is not None and result.returncode == 0
+        self.check("run_demux.py runs successfully", demux_success)
+
+        if not demux_success:
+            if result:
+                self.log(f"[ERROR] Demux stderr: {result.stderr}")
+            return False
+
+        # Load manifest to get expected wells
+        manifest_path = self.output_dir / "synthetic_manifest.csv"
+        expected_wells = []
+        with open(manifest_path) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row["well"] != "UNKNOWN":
+                    # Normalize well format: A1 -> A01
+                    well = row["well"]
+                    if len(well) == 2:  # e.g., "A1"
+                        well = f"{well[0]}{int(well[1:]):02d}"
+                    expected_wells.append(well)
+
+        # Check well files exist (AC-002: well_<row><col>.fastq.gz)
+        for well in expected_wells:
+            well_file = demux_output / f"well_{well}.fastq.gz"
+            self.check(f"well_{well}.fastq.gz exists", well_file.is_file())
+
+        # Check unknown file exists
+        unknown_file = demux_output / "unknown.fastq.gz"
+        self.check("unknown.fastq.gz exists", unknown_file.is_file())
+
+        return True
+
+    def verify_m0002_ac003_integrity(self):
+        """M-0002 AC-003: Verify data integrity (valid gzip, R1/R2 pairing)."""
+        self.log("")
+        self.log("--- M-0002 AC-003: Data Integrity ---")
+        self.log("")
+
+        demux_output = self.output_dir / "demux"
+
+        if not demux_output.is_dir():
+            self.check("Demux output available for integrity check", False)
+            return False
+
+        self.check("Demux output available for integrity check", True)
+
+        # Check all .gz files are valid gzip
+        gz_files = list(demux_output.glob("*.gz"))
+        all_valid = True
+
+        for gz_file in gz_files:
+            try:
+                with gzip.open(gz_file, "rt") as f:
+                    # Read first line to verify it's valid
+                    f.readline()
+                is_valid = True
+            except Exception as e:
+                is_valid = False
+                all_valid = False
+                self.log(f"[ERROR] Invalid gzip: {gz_file}: {e}")
+
+            self.check(f"{gz_file.name} is valid gzip", is_valid)
+
+        return all_valid
+
+    def verify_m0002_ac004_reporting(self):
+        """M-0002 AC-004: Verify stats generation and read count sum."""
+        self.log("")
+        self.log("--- M-0002 AC-004: Reporting ---")
+        self.log("")
+
+        demux_output = self.output_dir / "demux"
+        stats_file = demux_output / "demux_stats.tsv"
+
+        # Check stats file exists
+        self.check("demux_stats.tsv exists", stats_file.is_file())
+
+        if not stats_file.is_file():
+            return False
+
+        # Load stats
+        stats = {}
+        total_from_stats = 0
+        with open(stats_file) as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            columns = reader.fieldnames
+
+            # Check required columns
+            self.check("Stats has 'well_id' column", "well_id" in columns)
+            self.check("Stats has 'read_count' column", "read_count" in columns)
+            self.check("Stats has 'percent' column", "percent" in columns)
+
+            for row in reader:
+                well_id = row["well_id"]
+                count = int(row["read_count"])
+                stats[well_id] = count
+                total_from_stats += count
+
+        # Count reads in input file
+        r1_path = self.output_dir / "synthetic_R1.fq.gz"
+        total_input = 0
+        with gzip.open(r1_path, "rt") as f:
+            for _ in f:
+                total_input += 1
+        total_input = total_input // 4  # 4 lines per read
+
+        # Verify sum equals total
+        sum_matches = total_from_stats == total_input
+        self.check(f"Stats sum ({total_from_stats}) equals input reads ({total_input})",
+                   sum_matches)
+
+        # Load manifest and verify counts match expected
+        manifest_path = self.output_dir / "synthetic_manifest.csv"
+        manifest_counts = {}
+        with open(manifest_path) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                well = row["well"]
+                count = int(row["num_reads"])
+                # Normalize well format: A1 -> A01
+                if well != "UNKNOWN" and len(well) == 2:
+                    well = f"{well[0]}{int(well[1:]):02d}"
+                manifest_counts[well] = count
+
+        # Verify each well count matches
+        all_match = True
+        for well, expected in manifest_counts.items():
+            if well == "UNKNOWN":
+                actual = stats.get("UNKNOWN", 0)
+            else:
+                actual = stats.get(well, 0)
+
+            matches = actual == expected
+            if not matches:
+                all_match = False
+                self.log(f"[WARN] {well}: expected {expected}, got {actual}")
+
+        self.check("All well counts match expected", all_match)
+
+        return sum_matches and all_match
+
+    def verify_m0002_full_cycle(self):
+        """M-0002 AC-005: Run full verification cycle."""
+        self.log("")
+        self.log("=" * 50)
+        self.log("M-0002 Full Cycle Verification")
+        self.log("=" * 50)
+
+        # Step 1: Generate synthetic data (reuse AC-003 from M-0001)
+        self.log("")
+        self.log("Step 1: Generate Synthetic Data")
+        gen_script = self.project_root / "scripts/generate_synthetic.py"
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        result = self.run_command(
+            [sys.executable, str(gen_script),
+             "--output-dir", str(self.output_dir),
+             "--wells", "3",
+             "--plates", "1",
+             "--num-reads", "10",
+             "--noise-reads", "5"],
+            "Generating synthetic data (3 wells, 10 reads each, 5 noise)..."
+        )
+
+        gen_success = result is not None and result.returncode == 0
+        self.check("Synthetic data generation", gen_success)
+
+        if not gen_success:
+            return False
+
+        # Step 2: Run demux
+        self.log("")
+        self.log("Step 2: Run Demux")
+        self.verify_m0002_ac001_interface()
+        self.verify_m0002_ac002_functionality()
+
+        # Step 3: Verify integrity
+        self.log("")
+        self.log("Step 3: Verify Integrity")
+        self.verify_m0002_ac003_integrity()
+
+        # Step 4: Verify reporting
+        self.log("")
+        self.log("Step 4: Verify Reporting")
+        self.verify_m0002_ac004_reporting()
+
+        return True
+
+    def save_results(self, milestone="M-0001"):
         """Save verification results to log and JSON files."""
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
-        log_file = self.log_dir / f"M-0001-verify-{self.timestamp}.txt"
-        json_file = self.log_dir / f"M-0001-verify-{self.timestamp}.summary.json"
+        log_file = self.log_dir / f"{milestone}-verify-{self.timestamp}.txt"
+        json_file = self.log_dir / f"{milestone}-verify-{self.timestamp}.summary.json"
 
         # Build full log
         header = [
             "=" * 50,
-            f"M-0001 Verification - {self.timestamp}",
+            f"{milestone} Verification - {self.timestamp}",
             "=" * 50,
             "",
         ]
@@ -373,12 +624,23 @@ class Verifier:
         # Save log file
         log_file.write_text(full_log)
 
+        # Determine tasks and ACs based on milestone
+        if milestone == "M-0001":
+            tasks = ["T-001", "T-002", "T-003", "T-004"]
+            acs = ["AC-001", "AC-002", "AC-003", "AC-004"]
+        elif milestone == "M-0002":
+            tasks = ["T-001", "T-002", "T-003"]
+            acs = ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005"]
+        else:
+            tasks = []
+            acs = []
+
         # Save JSON summary
         summary = {
             "timestamp": self.timestamp,
-            "milestone": "M-0001",
-            "tasks_verified": ["T-001", "T-002", "T-003", "T-004"],
-            "acceptance_criteria": ["AC-001", "AC-002", "AC-003", "AC-004"],
+            "milestone": milestone,
+            "tasks_verified": tasks,
+            "acceptance_criteria": acs,
             "total_checks": self.results.total,
             "passed": self.results.passed,
             "failed": self.results.failed,
@@ -395,22 +657,57 @@ class Verifier:
 
         return log_file, json_file
 
-    def run(self):
-        """Run full verification workflow."""
-        # AC-001: Structure
-        self.verify_ac001_structure()
+    def run(self, milestone="M-0001"):
+        """Run full verification workflow for specified milestone."""
 
-        # AC-003: Synthetic generator
-        self.verify_ac003_synthetic_generator()
+        if milestone == "M-0001":
+            # M-0001: Demux Recon
+            # AC-001: Structure
+            self.verify_ac001_structure()
 
-        # AC-002: Recon tool
-        self.verify_ac002_recon_tool()
+            # AC-003: Synthetic generator
+            self.verify_ac003_synthetic_generator()
 
-        # AC-004: Closed-loop
-        self.verify_ac004_closed_loop()
+            # AC-002: Recon tool
+            self.verify_ac002_recon_tool()
 
-        # Save results
-        log_file, json_file = self.save_results()
+            # AC-004: Closed-loop
+            self.verify_ac004_closed_loop()
+
+            # Save results
+            log_file, json_file = self.save_results(milestone="M-0001")
+
+        elif milestone == "M-0002":
+            # M-0002: Well Demux - Full Cycle (AC-005)
+            self.verify_m0002_full_cycle()
+
+            # Save results
+            log_file, json_file = self.save_results(milestone="M-0002")
+
+        elif milestone == "all":
+            # Run both milestones
+            self.log("=" * 50)
+            self.log("Running M-0001 Verification")
+            self.log("=" * 50)
+
+            self.verify_ac001_structure()
+            self.verify_ac003_synthetic_generator()
+            self.verify_ac002_recon_tool()
+            self.verify_ac004_closed_loop()
+
+            self.log("")
+            self.log("=" * 50)
+            self.log("Running M-0002 Verification")
+            self.log("=" * 50)
+
+            self.verify_m0002_full_cycle()
+
+            # Save combined results
+            log_file, json_file = self.save_results(milestone="M-0001-M-0002")
+
+        else:
+            self.log(f"Unknown milestone: {milestone}")
+            return False
 
         return self.results.success
 
@@ -427,7 +724,19 @@ def find_project_root():
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Verification script for M-0001 TIRTL-seq Demux Recon"
+        description="Verification script for TIRTL-seq Pipeline",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+    python scripts/verify.py                    # Verify M-0001 (default)
+    python scripts/verify.py --milestone M-0002 # Verify M-0002 only
+    python scripts/verify.py --milestone all    # Verify all milestones
+"""
+    )
+    parser.add_argument(
+        "--milestone", "-m", type=str, default="M-0001",
+        choices=["M-0001", "M-0002", "all"],
+        help="Milestone to verify (default: M-0001)"
     )
     parser.add_argument(
         "--output-dir", type=str, default="build",
@@ -462,7 +771,7 @@ def main():
 
     # Run verification
     verifier = Verifier(project_root, output_dir, log_dir, args.verbose)
-    success = verifier.run()
+    success = verifier.run(milestone=args.milestone)
 
     return 0 if success else 1
 

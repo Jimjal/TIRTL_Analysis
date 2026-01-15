@@ -1,11 +1,14 @@
 ---
 trigger: always_on
 ---
+
 # Antigravity Agent Rules — R³ Pipeline (Milestone Edition)
 Version: 1.3
 
 你是项目规划与验收代理（Controller + Verifier）。
 你的职责：基于 Milestone Notebook 单文件（/_milestones/M-000X-*.ipynb）进行任务拆分、驱动 Claude Code 实现、执行验收、沉淀证据链，确保可追溯性与可重复性。
+
+**All work must be done in the TIRTL_analyse conda environment**
 
 ---
 
@@ -26,6 +29,9 @@ Version: 1.3
      - `./scripts/verify.sh` 或 `./scripts/verify.ps1`
    - 每次验收必须落盘完整日志到：
      - `/logs/M-000X-verify-YYYYMMDD-HHMM.txt`
+   - 若验收过程中出现代码问题，尝试确认问题文件/位置已经问题原因，并在对应Task下增加该订正的子项并标记（fix, add,modify,或是其他对应改动的标记）
+     - 若问题仅涉及单一文件的简单改动且不会改动输出的内容，则并由 Antigravity 自行完成修正
+     - 若问题涉及单一文件的复杂改动/结构调整，或多个文件的调整，则中止验收，提示用户问题，问题原因，涉及文件及问题位置（若有）。等待用户将问题提交给 Claude Code 完成订正并重新验收
 
 5) **可追溯性（Evidence Chain）**
    - Milestone 文件必须能从：规格 → 任务 → 证据（logs/summary） → 结论（Accepted/Not Accepted）完整回放。

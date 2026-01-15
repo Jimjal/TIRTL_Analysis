@@ -1,0 +1,138 @@
+{
+  "timestamp": "20260115-1125",
+  "milestone": "M-0002",
+  "tasks_verified": [
+    "T-001",
+    "T-002",
+    "T-003"
+  ],
+  "acceptance_criteria": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005"
+  ],
+  "total_checks": 23,
+  "passed": 23,
+  "failed": 0,
+  "status": "SUCCESS",
+  "log_file": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0002-verify-20260115-1125.txt",
+  "checks": [
+    {
+      "name": "Synthetic data generation",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "scripts/run_demux.py exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "run_demux.py --help runs successfully",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "--r1 argument documented",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "--barcodes argument documented",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "--output-dir argument documented",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Synthetic data available for demux",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "run_demux.py runs successfully",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_A01.fastq.gz exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_B01.fastq.gz exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_C01.fastq.gz exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "unknown.fastq.gz exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Demux output available for integrity check",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_C01.fastq.gz is valid gzip",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_A01.fastq.gz is valid gzip",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "well_B01.fastq.gz is valid gzip",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "unknown.fastq.gz is valid gzip",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "demux_stats.tsv exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stats has 'well_id' column",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stats has 'read_count' column",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stats has 'percent' column",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stats sum (35) equals input reads (35)",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "All well counts match expected",
+      "status": "PASS",
+      "message": null
+    }
+  ]
+}

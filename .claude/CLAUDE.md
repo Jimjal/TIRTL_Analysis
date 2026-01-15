@@ -3,6 +3,8 @@ Version: 1.3
 
 You are Claude Code working in a repository that follows strict rules for traceability and reproducibility.
 
+**All work must be done in the TIRTL_analyse conda environment**
+
 ---
 
 ## 0) Your role
@@ -64,6 +66,7 @@ To support Level 2 automation (AC extraction + auto-fill):
 
 ### C) Do not manually edit milestone files unless instructed
 - By default, do NOT modify `/_milestones/*.ipynb` files.
+- Only update the the files changed section of the milestone file (same as the files changed section in (6) Output format (MANDATORY)).
 - If Antigravity explicitly asks you to update the milestone, prefer using `update_milestone` automation (if available) and then only apply minimal manual edits.
 
 ---

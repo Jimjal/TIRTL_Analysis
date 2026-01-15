@@ -1,0 +1,63 @@
+==================================================
+M-0002 Verification - 20260115-1125
+==================================================
+
+
+==================================================
+M-0002 Full Cycle Verification
+==================================================
+
+Step 1: Generate Synthetic Data
+[INFO] Generating synthetic data (3 wells, 10 reads each, 5 noise)...
+[PASS] Synthetic data generation
+
+Step 2: Run Demux
+
+--- M-0002 AC-001: Demux Interface ---
+
+[PASS] scripts/run_demux.py exists
+[INFO] Testing run_demux.py --help...
+[PASS] run_demux.py --help runs successfully
+[PASS] --r1 argument documented
+[PASS] --barcodes argument documented
+[PASS] --output-dir argument documented
+
+--- M-0002 AC-002: Demux Functionality ---
+
+[PASS] Synthetic data available for demux
+[INFO] Running demux on synthetic data...
+[PASS] run_demux.py runs successfully
+[PASS] well_A01.fastq.gz exists
+[PASS] well_B01.fastq.gz exists
+[PASS] well_C01.fastq.gz exists
+[PASS] unknown.fastq.gz exists
+
+Step 3: Verify Integrity
+
+--- M-0002 AC-003: Data Integrity ---
+
+[PASS] Demux output available for integrity check
+[PASS] well_C01.fastq.gz is valid gzip
+[PASS] well_A01.fastq.gz is valid gzip
+[PASS] well_B01.fastq.gz is valid gzip
+[PASS] unknown.fastq.gz is valid gzip
+
+Step 4: Verify Reporting
+
+--- M-0002 AC-004: Reporting ---
+
+[PASS] demux_stats.tsv exists
+[PASS] Stats has 'well_id' column
+[PASS] Stats has 'read_count' column
+[PASS] Stats has 'percent' column
+[PASS] Stats sum (35) equals input reads (35)
+[PASS] All well counts match expected
+
+==================================================
+Summary: 23 passed, 0 failed (Total: 23)
+==================================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0002-verify-20260115-1125.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0002-verify-20260115-1125.summary.json
+
+SUCCESS: All checks passed.

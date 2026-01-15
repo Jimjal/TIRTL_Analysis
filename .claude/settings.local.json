@@ -1,8 +1,38 @@
 {
   "permissions": {
     "allow": [
+      "Read",
       "Bash(chmod:*)",
-      "Bash(./scripts/verify.sh:*)"
+      "Bash(./scripts/verify.sh:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nM-0001 T-001: Initialize repo structure and templates \\(AC-001\\)\n\n- Create examples/ with well_barcodes.csv and plate_barcodes.csv templates\n- Create scripts/ directory with verify.sh validation script\n- Create docs/demux_plan.md with section placeholders\n- Add .gitignore to exclude FASTQ data and build artifacts\n- Include project config files \\(.claude/, .agent/, _milestone/\\)\n\nAll AC-001 checks pass \\(10/10\\).\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(python3:*)",
+      "Bash(zcat:*)",
+      "Bash(cat:*)",
+      "Bash(gunzip:*)",
+      "Bash(where:*)",
+      "Bash(pip show:*)",
+      "WebSearch",
+      "Bash(python scripts/generate_synthetic.py:*)",
+      "Bash(python scripts/verify.py:*)",
+      "Bash(conda run:*)",
+      "Bash(conda install:*)",
+      "Bash(conda env:*)",
+      "Bash(conda search:*)",
+      "Bash(pip index:*)",
+      "Bash(conda info:*)",
+      "Bash(conda activate:*)",
+      "Bash(conda list:*)",
+      "Bash(pip install:*)",
+      "Bash(demultiplex --help:*)",
+      "Bash(demultiplex demux --help:*)",
+      "Bash(for f in build/test_demux/*.gz)",
+      "Bash(do echo -n \"$f: \")",
+      "Bash(done)"
     ]
   }
 }

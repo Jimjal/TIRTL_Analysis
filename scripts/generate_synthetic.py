@@ -19,6 +19,7 @@ Options:
     --read-length N     Length of random sequence portion (default: 100)
     --wells N           Number of wells to include (default: 3)
     --plates N          Number of plates to include (default: 2)
+    --noise-reads N     Number of noise reads (unknown barcodes) (default: 5)
     --seed N            Random seed for reproducibility (default: 42)
 """
 
@@ -54,6 +55,10 @@ def parse_args():
     parser.add_argument(
         "--plates", type=int, default=2,
         help="Number of plates to include (default: 2)"
+    )
+    parser.add_argument(
+        "--noise-reads", type=int, default=5,
+        help="Number of noise reads with unknown barcodes (default: 5)"
     )
     parser.add_argument(
         "--seed", type=int, default=42,
@@ -98,14 +103,26 @@ def load_well_barcodes(filepath):
 
 
 def load_plate_barcodes(filepath):
-    """Load plate barcodes from CSV file."""
+    """Load plate barcodes from CSV file.
+
+    Note: TIRTL plate barcodes have a common Nextera adapter prefix (33bp).
+    The unique plate-identifying portion starts at position 33.
+    We extract both the full sequence and the unique portion for use.
+    """
+    # Common Nextera adapter prefix length
+    ADAPTER_PREFIX_LEN = 33
+
     barcodes = []
     with open(filepath, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
+            full_seq = row["sequence"]
+            # Use the full sequence (Adapter + Unique) as the prefix
+            # This ensures R1 starts with TCGTCGGCAG... as expected by documentation
             barcodes.append({
                 "name": row["name"],
-                "sequence": row["sequence"],
+                "sequence": full_seq,
+                "unique_prefix": full_seq[:50],  # Use first 50bp (Adapter + ID)
             })
     return barcodes
 
@@ -184,9 +201,11 @@ class SyntheticFASTQGenerator:
         )
 
         # Generate sequences with barcodes
-        # R1: plate barcode (first 20bp) + random insert
-        plate_prefix = plate["sequence"][:20]
-        random_insert_r1 = generate_random_sequence(read_length - 20)
+        # R1: unique plate barcode prefix (12bp) + random insert
+        # Using unique_prefix which is the plate-identifying portion after adapter
+        plate_prefix = plate["unique_prefix"]
+        prefix_len = len(plate_prefix)
+        random_insert_r1 = generate_random_sequence(read_length - prefix_len)
         seq_r1 = plate_prefix + random_insert_r1
 
         # R2: well i7 barcode (first 10bp) + random insert
@@ -203,8 +222,45 @@ class SyntheticFASTQGenerator:
             (header_r2, seq_r2, qual_r2)
         )
 
+    def generate_noise_read(self, read_length):
+        """
+        Generate a noise read pair with random (non-matching) barcodes.
+
+        These reads have barcodes that don't match any known well/plate,
+        simulating sequencing noise or unknown samples.
+        """
+        x, y = self._next_coords()
+
+        # Generate random 10bp "barcodes" that are unlikely to match known ones
+        fake_i5 = generate_random_sequence(10)
+        fake_i7 = generate_random_sequence(10)
+        index_str = f"{fake_i5}+{fake_i7}"
+
+        # Generate headers
+        header_r1 = generate_illumina_header(
+            self.instrument, self.run, self.flowcell, self.lane,
+            self.tile, x, y, 1, "N", 0, index_str
+        )
+        header_r2 = generate_illumina_header(
+            self.instrument, self.run, self.flowcell, self.lane,
+            self.tile, x, y, 2, "N", 0, index_str
+        )
+
+        # Generate fully random sequences (no valid barcode prefix)
+        seq_r1 = generate_random_sequence(read_length)
+        seq_r2 = generate_random_sequence(read_length)
+
+        # Generate quality strings
+        qual_r1 = generate_quality_string(len(seq_r1))
+        qual_r2 = generate_quality_string(len(seq_r2))
+
+        return (
+            (header_r1, seq_r1, qual_r1),
+            (header_r2, seq_r2, qual_r2)
+        )
+
     def generate_fastq(self, output_dir, num_reads, read_length,
-                       num_wells, num_plates):
+                       num_wells, num_plates, noise_reads=0):
         """Generate synthetic FASTQ files."""
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
@@ -235,9 +291,26 @@ class SyntheticFASTQGenerator:
                         "plate": plate["name"],
                         "i5_name": well["i5_name"],
                         "i7_name": well["i7_name"],
-                        "plate_prefix": plate["sequence"][:20],
+                        "plate_prefix": plate["unique_prefix"],
                         "num_reads": num_reads,
                     })
+
+            # Generate noise reads (unknown barcodes)
+            for _ in range(noise_reads):
+                r1, r2 = self.generate_noise_read(read_length)
+                f1.write(f"{r1[0]}\n{r1[1]}\n+\n{r1[2]}\n")
+                f2.write(f"{r2[0]}\n{r2[1]}\n+\n{r2[2]}\n")
+
+        # Add noise entry to manifest
+        if noise_reads > 0:
+            manifest.append({
+                "well": "UNKNOWN",
+                "plate": "UNKNOWN",
+                "i5_name": "RANDOM",
+                "i7_name": "RANDOM",
+                "plate_prefix": "RANDOM",
+                "num_reads": noise_reads,
+            })
 
         # Write manifest
         manifest_path = output_path / "synthetic_manifest.csv"
@@ -248,13 +321,16 @@ class SyntheticFASTQGenerator:
             writer.writeheader()
             writer.writerows(manifest)
 
-        total_reads = num_wells * num_plates * num_reads
+        known_reads = num_wells * num_plates * num_reads
+        total_reads = known_reads + noise_reads
 
         return {
             "r1_path": str(r1_path),
             "r2_path": str(r2_path),
             "manifest_path": str(manifest_path),
             "total_reads": total_reads,
+            "known_reads": known_reads,
+            "noise_reads": noise_reads,
             "wells_used": num_wells,
             "plates_used": num_plates,
         }
@@ -319,6 +395,7 @@ def main():
     print(f"  Wells: {args.wells}")
     print(f"  Plates: {args.plates}")
     print(f"  Reads per combination: {args.num_reads}")
+    print(f"  Noise reads: {args.noise_reads}")
     print(f"  Read length: {args.read_length}")
     print(f"  Random seed: {args.seed}")
 
@@ -327,13 +404,16 @@ def main():
         args.num_reads,
         args.read_length,
         args.wells,
-        args.plates
+        args.plates,
+        args.noise_reads
     )
 
     print(f"\nGeneration complete!")
     print(f"  R1: {result['r1_path']}")
     print(f"  R2: {result['r2_path']}")
     print(f"  Manifest: {result['manifest_path']}")
+    print(f"  Known reads: {result['known_reads']}")
+    print(f"  Noise reads: {result['noise_reads']}")
     print(f"  Total reads: {result['total_reads']}")
 
     return 0
