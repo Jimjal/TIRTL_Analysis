@@ -1,0 +1,136 @@
+{
+  "timestamp": "20260123-1547",
+  "milestone": "M-0006",
+  "tasks_verified": [
+    "T-001"
+  ],
+  "acceptance_criteria": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005"
+  ],
+  "total_checks": 23,
+  "passed": 23,
+  "failed": 0,
+  "status": "SUCCESS",
+  "log_file": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0006-verify-20260123-1547.txt",
+  "checks": [
+    {
+      "name": "docs/runbook_real_data.md exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has prerequisites section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has data layout section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has config example reference",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has execution steps",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has resource/time estimates",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook has troubleshooting section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents prohibition of real data submission",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents data placement guidance",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Mentions .gitignore",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents log sanitization/privacy",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents cache cleanup",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents required log files",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents QC outputs",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents delivery package structure",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents what NOT to include in delivery",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents dry-run with synthetic data",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents verify.py usage",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Documents result verification steps",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "verify.py supports M-0006",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook is primarily Chinese",
+      "status": "PASS",
+      "message": "Chinese ratio: 19.1%"
+    },
+    {
+      "name": "No unauthorized new dependencies",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "No real data embedded in runbook",
+      "status": "PASS",
+      "message": null
+    }
+  ]
+}

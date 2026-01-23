@@ -8,10 +8,11 @@
 *.tar.gz
 
 # Raw data directories
-ZijianHuang_*/
+Example dataset/
 
 # Build artifacts
 build/
+build_*/
 
 # OS files
 .DS_Store

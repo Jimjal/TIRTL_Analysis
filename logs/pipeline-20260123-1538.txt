@@ -1,0 +1,57 @@
+============================================================
+TIRTL-seq Pipeline Log - 20260123-1538
+============================================================
+
+[15:38:05] [INFO] TIRTL-seq Demultiplex Pipeline Started
+[15:38:05] [INFO] Timestamp: 20260123-1538
+[15:38:05] [INFO] Project Root: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis
+[15:38:05] [INFO] 
+[15:38:05] [INFO] Configuration:
+[15:38:05] [INFO]   R1: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R1.fq.gz
+[15:38:05] [INFO]   R2: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R2.fq.gz
+[15:38:05] [INFO]   Well Barcodes: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_well.csv
+[15:38:05] [INFO]   Plate Barcodes: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_plate.csv
+[15:38:05] [INFO]   Output Root: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Stage 0: Generate Synthetic Data
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Running: Generate synthetic data (2 wells, 2 plates, 10 reads)
+[15:38:05] [INFO]   Command: /Users/zijian/miniconda3/envs/TIRTL_analyse/bin/python /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/scripts/generate_synthetic.py --output-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build --wells 2 --plates 2 --num-reads 10 --noise-reads 5
+[15:38:05] [INFO]   Status: SUCCESS
+[15:38:05] [INFO] 
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Stage 1: Well Demux (M-0002)
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Running: Well demultiplexing
+[15:38:05] [INFO]   Command: /Users/zijian/miniconda3/envs/TIRTL_analyse/bin/python /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/scripts/run_demux.py --r1 /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R1.fq.gz --barcodes /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_well.csv --output-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/demux --r2 /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R2.fq.gz --mismatch 1
+[15:38:05] [INFO]   Status: SUCCESS
+[15:38:05] [INFO] 
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Stage 2: Plate Demux (M-0003)
+[15:38:05] [INFO] ==================================================
+[15:38:05] [INFO] Running: Plate demultiplexing
+[15:38:05] [INFO]   Command: /Users/zijian/miniconda3/envs/TIRTL_analyse/bin/python /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/scripts/run_plate_demux.py --input-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/demux --barcodes /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/TIRTL_barcode_plate.csv --output-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/plate_demux --mismatch 1
+[15:38:06] [INFO]   Status: SUCCESS
+[15:38:06] [INFO] 
+[15:38:06] [INFO] ==================================================
+[15:38:06] [INFO] Stage 3: QC & Reporting (M-0004)
+[15:38:06] [INFO] ==================================================
+[15:38:06] [INFO] Running: QC & Reporting
+[15:38:06] [INFO]   Command: /Users/zijian/miniconda3/envs/TIRTL_analyse/bin/python /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/scripts/run_qc.py --plate-demux-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/plate_demux --well-demux-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/demux --output-dir /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/qc --input-r1 /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R1.fq.gz --input-r2 /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/synthetic_R2.fq.gz
+[15:38:06] [INFO]   Status: SUCCESS
+
+============================================================
+Overall Status: PASS
+============================================================
+
+Stage Results:
+  synthetic: PASS
+  well_demux: PASS
+  plate_demux: PASS
+  qc_report: PASS
+
+Acceptance Criteria:
+  AC-001: PASS - Config parsed and paths resolved
+  AC-002: PASS - All enabled stages completed
+  AC-003: PASS - Logs: pipeline-20260123-1538.txt, pipeline-20260123-1538.summary.json
+  AC-004: PASS - Runbook exists at docs/runbook_cli.md

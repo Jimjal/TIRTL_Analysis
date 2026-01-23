@@ -1,0 +1,111 @@
+# TIRTL-seq Demultiplex Pipeline Configuration
+# =============================================
+#
+# 配置文件示例 (Configuration Example)
+# 复制此文件并根据实际路径修改
+# Copy this file and modify paths as needed
+#
+# Usage:
+#   python scripts/run_pipeline.py --config config/my_config.yaml
+#
+# 环境要求 (Environment):
+#   conda activate TIRTL_analyse
+
+# =============================================
+# 输入文件 (Input Files)
+# =============================================
+input:
+  # R1 FASTQ 文件路径 (gzipped)
+  # 合成数据默认使用 build/synthetic_R1.fq.gz
+  # 真实数据请填写本地绝对路径 (不要提交到仓库)
+  r1: "build/synthetic_R1.fq.gz"
+
+  # R2 FASTQ 文件路径 (gzipped, 可选)
+  # 若无 R2 可设为 null 或注释掉
+  r2: "build/synthetic_R2.fq.gz"
+
+# =============================================
+# 条码表 (Barcode Tables)
+# =============================================
+barcodes:
+  # Well 条码表 (i5+i7 UDI)
+  well: "TIRTL_barcode_well.csv"
+
+  # Plate 条码表 (R1 前缀)
+  plate: "TIRTL_barcode_plate.csv"
+
+# =============================================
+# 输出配置 (Output Configuration)
+# =============================================
+output:
+  # 输出根目录
+  root_dir: "build"
+
+  # 各阶段子目录 (相对于 root_dir)
+  well_demux_dir: "demux"
+  plate_demux_dir: "plate_demux"
+  qc_dir: "qc"
+
+# =============================================
+# 日志配置 (Logging Configuration)
+# =============================================
+logging:
+  # 日志目录
+  log_dir: "logs"
+
+  # 日志文件前缀
+  log_prefix: "pipeline"
+
+# =============================================
+# 阶段开关 (Stage Toggles)
+# =============================================
+# 可选择性跳过某些阶段
+stages:
+  # 是否生成合成数据 (用于测试)
+  generate_synthetic: true
+
+  # 合成数据参数 (仅当 generate_synthetic=true 时有效)
+  synthetic_params:
+    wells: 2
+    plates: 2
+    num_reads: 10
+    noise_reads: 5
+
+  # 是否执行 Well Demux (M-0002)
+  well_demux: true
+
+  # 是否执行 Plate Demux (M-0003)
+  plate_demux: true
+
+  # 是否执行 QC 报告 (M-0004)
+  qc_report: true
+
+# =============================================
+# 高级参数 (Advanced Parameters)
+# =============================================
+advanced:
+  # 条码允许错配数
+  mismatch: 1
+
+  # 是否保留临时文件 (调试用)
+  keep_temp: false
+
+# =============================================
+# 环境提示 (Environment Notes)
+# =============================================
+#
+# 1. 确保已激活 TIRTL_analyse conda 环境:
+#    conda activate TIRTL_analyse
+#
+# 2. 确保已安装 demultiplex 工具:
+#    pip install demultiplex
+#
+# 3. 真实数据路径示例 (不要提交到仓库):
+#    input:
+#      r1: "/local/data/experiment_R1.fastq.gz"
+#      r2: "/local/data/experiment_R2.fastq.gz"
+#
+# 4. 仅运行 Well Demux (跳过后续阶段):
+#    stages:
+#      plate_demux: false
+#      qc_report: false

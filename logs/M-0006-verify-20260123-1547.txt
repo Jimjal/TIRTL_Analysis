@@ -1,0 +1,55 @@
+==================================================
+M-0006 Verification - 20260123-1547
+==================================================
+
+
+==================================================
+M-0006 Full Cycle Verification (Real Data Runbook)
+==================================================
+
+--- M-0006 AC-001: Runbook Completeness ---
+
+[PASS] docs/runbook_real_data.md exists
+[PASS] Runbook has prerequisites section
+[PASS] Runbook has data layout section
+[PASS] Runbook has config example reference
+[PASS] Runbook has execution steps
+[PASS] Runbook has resource/time estimates
+[PASS] Runbook has troubleshooting section
+
+--- M-0006 AC-002: Data Governance & Compliance ---
+
+[PASS] Documents prohibition of real data submission
+[PASS] Documents data placement guidance
+[PASS] Mentions .gitignore
+[PASS] Documents log sanitization/privacy
+[PASS] Documents cache cleanup
+
+--- M-0006 AC-003: Audit & Deliverables ---
+
+[PASS] Documents required log files
+[PASS] Documents QC outputs
+[PASS] Documents delivery package structure
+[PASS] Documents what NOT to include in delivery
+
+--- M-0006 AC-004: Self-Check & Validation ---
+
+[PASS] Documents dry-run with synthetic data
+[PASS] Documents verify.py usage
+[PASS] Documents result verification steps
+[PASS] verify.py supports M-0006
+
+--- M-0006 AC-005: Language & Scope ---
+
+[PASS] Runbook is primarily Chinese
+[PASS] No unauthorized new dependencies
+[PASS] No real data embedded in runbook
+
+==================================================
+Summary: 23 passed, 0 failed (Total: 23)
+==================================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0006-verify-20260123-1547.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0006-verify-20260123-1547.summary.json
+
+SUCCESS: All checks passed.

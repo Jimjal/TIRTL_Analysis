@@ -1,0 +1,35 @@
+{
+  "timestamp": "20260123-1538",
+  "config_file": "/var/folders/6l/1g79phkd5ynfbnc_x9933pk80000gn/T/tmpqfkg4m_9.yaml",
+  "stage_results": {
+    "synthetic": "PASS",
+    "well_demux": "PASS",
+    "plate_demux": "PASS",
+    "qc_report": "PASS"
+  },
+  "acceptance_criteria": {
+    "AC-001": {
+      "status": "PASS",
+      "message": "Config parsed and paths resolved"
+    },
+    "AC-002": {
+      "status": "PASS",
+      "message": "All enabled stages completed"
+    },
+    "AC-003": {
+      "status": "PASS",
+      "message": "Logs: pipeline-20260123-1538.txt, pipeline-20260123-1538.summary.json"
+    },
+    "AC-004": {
+      "status": "PASS",
+      "message": "Runbook exists at docs/runbook_cli.md"
+    }
+  },
+  "overall_status": "PASS",
+  "paths": {
+    "output_root": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build",
+    "well_demux_dir": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/demux",
+    "plate_demux_dir": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/plate_demux",
+    "qc_dir": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/build/qc"
+  }
+}

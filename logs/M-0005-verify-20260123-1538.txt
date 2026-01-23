@@ -1,0 +1,62 @@
+==================================================
+M-0005 Verification - 20260123-1538
+==================================================
+
+
+==================================================
+M-0005 Full Cycle Verification (CLI & Config)
+==================================================
+
+--- M-0005 AC-001: Config & Parsing ---
+
+[PASS] config/tirtl_config.example.yaml exists
+[PASS] Config is valid YAML
+[PASS] Config has 'input' section
+[PASS] Config has 'barcodes' section
+[PASS] Config has 'output' section
+[PASS] Config has 'stages' section
+[PASS] Config input.r1 defined
+[PASS] Config barcodes.well defined
+[PASS] Config barcodes.plate defined
+[PASS] scripts/run_pipeline.py exists
+[INFO] Testing run_pipeline.py --help...
+[PASS] run_pipeline.py --help runs successfully
+[PASS] --config argument documented
+
+--- M-0005 AC-004: Runbook Documentation ---
+
+[PASS] docs/runbook_cli.md exists
+[PASS] Runbook contains environment section
+[PASS] Runbook contains config section
+[PASS] Runbook contains run instructions
+[PASS] Runbook contains FAQ section
+
+--- M-0005 AC-002: CLI Pipeline Execution ---
+
+[INFO] Running full pipeline with example config...
+[PASS] Pipeline runs successfully
+[PASS] Well demux output exists
+[PASS] Plate demux output exists
+[PASS] QC output exists
+[PASS] QC summary.json exists
+[PASS] QC qc_report.md exists
+
+--- M-0005 AC-003: Logs & Summary ---
+
+[PASS] Pipeline log file exists
+[PASS] Pipeline summary JSON exists
+[PASS] Summary has stage_results
+[PASS] Summary has acceptance_criteria
+[PASS] Summary has overall_status
+[PASS] Stage results include well_demux
+[PASS] Stage results include plate_demux
+[PASS] Stage results include qc_report
+
+==================================================
+Summary: 31 passed, 0 failed (Total: 31)
+==================================================
+
+Log saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0005-verify-20260123-1538.txt
+Summary saved to: /Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0005-verify-20260123-1538.summary.json
+
+SUCCESS: All checks passed.

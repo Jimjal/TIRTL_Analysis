@@ -1,0 +1,176 @@
+{
+  "timestamp": "20260123-1538",
+  "milestone": "M-0005",
+  "tasks_verified": [
+    "T-001"
+  ],
+  "acceptance_criteria": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005"
+  ],
+  "total_checks": 31,
+  "passed": 31,
+  "failed": 0,
+  "status": "SUCCESS",
+  "log_file": "/Users/zijian/Library/CloudStorage/OneDrive-MonashUniversity/Experiment Recording/2507_DN Project/260105_DN project_TIRTL_Analysis/logs/M-0005-verify-20260123-1538.txt",
+  "checks": [
+    {
+      "name": "config/tirtl_config.example.yaml exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config is valid YAML",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config has 'input' section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config has 'barcodes' section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config has 'output' section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config has 'stages' section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config input.r1 defined",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config barcodes.well defined",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Config barcodes.plate defined",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "scripts/run_pipeline.py exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "run_pipeline.py --help runs successfully",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "--config argument documented",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "docs/runbook_cli.md exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook contains environment section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook contains config section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook contains run instructions",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Runbook contains FAQ section",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Pipeline runs successfully",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Well demux output exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Plate demux output exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "QC output exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "QC summary.json exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "QC qc_report.md exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Pipeline log file exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Pipeline summary JSON exists",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Summary has stage_results",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Summary has acceptance_criteria",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Summary has overall_status",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stage results include well_demux",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stage results include plate_demux",
+      "status": "PASS",
+      "message": null
+    },
+    {
+      "name": "Stage results include qc_report",
+      "status": "PASS",
+      "message": null
+    }
+  ]
+}
